@@ -5,9 +5,25 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'ngMap', 'starter.controllers', 'map.controllers', 'report.controllers', 'starter.services', 'rainapp-constants', 'ngIOS9UIWebViewPatch'])
+angular.module('starter', [
+  'ionic', 
+  'ngMap', 
+  'starter.controllers', 
+  'map.controllers', 
+  'report.controllers', 
+  'starter.services', 
+  'rainapp-constants', 
+  'ngIOS9UIWebViewPatch',
+  'controller.signup',
+  'controller.login',
+  'service.authentication',
+  'service.login',
+  'service.signup',
+  'service.user',
+  'rainapp.utils'
+  ])
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform, $rootScope, $ionicLoading, $location, $http, $localstorage) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -21,6 +37,43 @@ angular.module('starter', ['ionic', 'ngMap', 'starter.controllers', 'map.control
       // StatusBar.styleDarkContent();
     }
   });
+
+  //keep user logged in after page refresh
+  //http://jasonwatmore.com/post/2015/03/10/AngularJS-User-Registration-and-Login-Example.aspx
+  $rootScope.globals = $localstorage.getObject('globals');
+  if ($rootScope.globals){
+    if ($rootScope.globals.currentUser) {
+      $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata;
+    }  
+  } else {
+    $rootScope.globals = {};
+  }
+
+  $rootScope.$on('$locationChangeStart', function (event, next, current) {
+    // redirect to login page if not logged in and trying to access a restricted page
+    //TODO: Add to this!
+    var pageArray = ['/login', '/signup'];
+    var restrictedPage = pageArray.indexOf($location.path()) === -1;
+    // var restrictedPage = $.inArray($location.path(), ) === -1;
+    var loggedIn = $rootScope.globals.currentUser;
+    if (restrictedPage && !loggedIn) {
+      console.log("Error: not logged in. Redirecting to /login");
+      $location.path('/login');
+    }
+  });
+
+  //Refer to: http://learn.ionicframework.com/formulas/loading-screen-with-interceptors/
+  //Loading indicators and callbacks
+  $rootScope.$on('loading:show', function() {
+    $ionicLoading.show({
+      template: '<ion-spinner></ion-spinner>'
+    });
+  })
+
+  $rootScope.$on('loading:hide', function() {
+    $ionicLoading.hide();
+  })
+
 })
 
 .config(function($stateProvider, $urlRouterProvider, $provide, debug) {
@@ -30,6 +83,20 @@ angular.module('starter', ['ionic', 'ngMap', 'starter.controllers', 'map.control
   // Set up the various states which the app can be in.
   // Each state's controller can be found in controllers.js
   $stateProvider
+
+
+  .state('login', {
+    url: '/login',
+    templateUrl: 'templates/login.html',
+    controller: 'LoginCtrl'
+  })
+
+  .state('signup', {
+    url: '/signup',
+    templateUrl: 'templates/signup.html',
+    controller: 'SignupCtrl'
+  })
+
 
   // setup an abstract state for the tabs directive
   .state('tab', {
@@ -99,7 +166,7 @@ angular.module('starter', ['ionic', 'ngMap', 'starter.controllers', 'map.control
         if(exception.stack)   { data.stack    = exception.stack;    }
       }
 
-    if(debug){
+      if(debug){
         console.log('exception', data);
         window.alert('Error: '+data.message);
       } else {

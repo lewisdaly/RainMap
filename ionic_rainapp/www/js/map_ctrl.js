@@ -22,13 +22,17 @@ angular.module('map.controllers', [])
 
     //Create Info window pop up to display Well Id and water level
     //Might want to change this to onClick -- mouseover get annoying
-    map.data.addListener('click', function(event) {
-      infoWindow.setContent('<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Well ID = '+
-        event.feature.getProperty('Id') +"<br/>Water Level: " + event.feature.getProperty("Level")  + "m");
-      var anchor = new google.maps.MVCObject();
-      anchor.set("position",event.latLng);
-      infoWindow.open(map,anchor);
+    map.data.addListener('click', function() {
+      console.log("click!");
     });
+
+    // map.data.addListener('click', function(event) {
+    //   infoWindow.setContent('<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Well ID = '+
+    //     event.feature.getProperty('Id') +"<br/>Water Level: " + event.feature.getProperty("Level")  + "m");
+    //   var anchor = new google.maps.MVCObject();
+    //   anchor.set("position",event.latLng);
+    //   infoWindow.open(map,anchor);
+    // });
 
 
     var heatMapData = []; //Container for heatmap data points

@@ -4,8 +4,10 @@ angular.module('starter.controllers', [])
   $scope.chat = Chats.get($stateParams.chatId);
 })
 
-.controller('SettingsCtrl', function($scope) {
-  $scope.settings = {
-    enableFriends: true
-  };
+.controller('SettingsCtrl', function($scope, $location) {
+
+  $scope.logout = function() {
+  	$location.path("login");
+  }
+  
 });

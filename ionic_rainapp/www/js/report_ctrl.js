@@ -1,4 +1,4 @@
-angular.module('report.controllers', [])
+  angular.module('report.controllers', [])
 
 .controller('ReportCtrl', function($scope, Chats, $ionicPopup, $http, apiUrl) {
   // With the new view caching in Ionic, Controllers are only called
