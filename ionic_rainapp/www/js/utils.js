@@ -21,19 +21,9 @@ angular.module('rainapp.utils', [])
   }
 }])
 
-.service('formatter', function(){
-
-  return({
-    formatDate: formatDate
-  });
-
-
-  function formatDate(date) {
-
-    
-  }
-
-
-})
+.constant('AzureMobileServiceClient', {
+    API_URL : "https://watermanagementmobile.azure-mobile.net/",
+    API_KEY : "vQWzbtVFXjBmcfKYtVmYPVkCzjynlo72"
+  })
 
 ;

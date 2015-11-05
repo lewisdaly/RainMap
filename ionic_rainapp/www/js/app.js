@@ -20,7 +20,8 @@ angular.module('starter', [
   'service.login',
   'service.signup',
   'service.user',
-  'rainapp.utils'
+  'rainapp.utils',
+  'azure-mobile-service.module'
   ])
 
 .run(function($ionicPlatform, $rootScope, $ionicLoading, $location, $http, $localstorage) {
@@ -166,7 +167,7 @@ angular.module('starter', [
         if(exception.stack)   { data.stack    = exception.stack;    }
       }
 
-      if(debug){
+      if(debug == 1){
         console.log('exception', data);
         window.alert('Error: '+data.message);
       } else {
@@ -192,7 +193,7 @@ angular.module('starter', [
       if(error.stack) { data.stack        = error.stack;  }
     }
 
-    if(debug){
+    if(debug == 1){
       console.log('exception', data);
       window.alert('Error: '+data.message);
     } else {
