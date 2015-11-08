@@ -1,16 +1,48 @@
   angular.module('report.controllers', [])
 
-  .controller('ReportCtrl', function($scope, Chats, $ionicPopup, $http, apiUrl, Azureservice) {
+  .controller('ReportCtrl', function($scope, Chats, $ionicPopup, $http, apiUrl, Azureservice, $rootScope) {
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
   // To listen for when this page is active (for example, to refresh data),
   // listen for the $ionicView.enter event:
   //
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
+  $scope.$on('$ionicView.enter', function(e) {
+    $scope.isUserNotLoggedIn = false;
+    $scope.isUserNotVerified = false;
+    $scope.isUserLoggedInAndVerified = false;
+
+    var currentUser = $rootScope.globals.currentUser;
+    console.log("currentUser: " + JSON.stringify(currentUser));
+
+    if (!currentUser) {
+      $scope.isUserNotLoggedIn = true;
+    }
+    else if (currentUser.verified == false) {
+      $scope.isUserNotVerified = true;
+    }
+    else
+    {
+      $scope.isUserLoggedInAndVerified = true;
+    }
+
+
+  });
 
   $scope.form = {};
   $scope.form.date =  new Date();
+
+
+  $scope.isUserNotLoggedIn = function () {
+    // return $rootScope.globals.currentUser;
+    return true;
+  }
+
+  $scope.isUserNotVerified = false;
+
+  $scope.isUserLoggedInAndVerified = function() {
+
+    return false;
+  }
 
   // Validate and submit form
   $scope.sendReport = function(form){
@@ -29,47 +61,17 @@
     data.wellDepth = $scope.form.wt_depth;
     data.wellID = $scope.form.well_id;
     data.timestamp = new Date();
-      //Submit to Azure - write directly to table for now
-      // Azureservice.insert('test_well_levels', data)
-      // .then(function() { 
-      //   console.log('Insert successful');
-      // }, function(err) {
-      //   console.error('Azure Error: ' + err);
-      // });
-
-  Azureservice.invokeApi("mobilerequest", {
-    method: "post",
-    body:data
-  }).then(function(response) {
-    console.log("Submitted successfully");
-
-  },function(err) {
-    console.log("Error: " + err);
-  });
 
 
+    Azureservice.invokeApi("mobilerequest", {
+      method: "post",
+      body:data
+    }).then(function(response) {
+      console.log("Submitted successfully");
 
-  //   //Send POST Request
-  //   var url = apiUrl + '/api/report'
-  //   $http.post(url, {
-  //     postcode:form['postcode'],
-  //     date:form['date'],
-  //     wellID:form['well_id'],
-  //     depth:form['wt_depth']
-  //   })
-  //   .then(function(response) {
-  //    // Perform on request confirmation:
-  //    var alertPopup = $ionicPopup.alert({
-  //     title: 'Submitted',
-  //     template: 'Thanks!'
-  //   });
-  //  }, function(response) {
-  //   //Error
-  //   var alertPopup = $ionicPopup.alert({
-  //     title: 'Error',
-  //     template: response.data.message
-  //   });
-  // });
+    },function(err) {
+      console.log("Error: " + err);
+    });
+  }
 
-}
 }})

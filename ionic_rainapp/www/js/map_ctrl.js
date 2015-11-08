@@ -9,6 +9,7 @@ angular.module('map.controllers', [])
     content: ""
   });
 
+
   $scope.$on('mapInitialized', function(event, map) {
     $scope.map = map;
     var well_data = {}; //ht

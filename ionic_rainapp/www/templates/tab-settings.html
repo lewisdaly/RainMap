@@ -1,12 +1,25 @@
 <ion-view view-title="Settings">
-  <ion-content>
-    <ion-list class="list list-card">
+<ion-content>
+<ion-list class="list list-card">
     <!-- <ion-toggle  ng-model="settings.enableFriends">
         Enable Awesome Mode
     </ion-toggle> -->
-    	<div class="item">
-    		<button class="button button-outline button-block button-clear button-calm" ng-click="logout()">Logout</button>
-    	</div>
-    </ion-list>
-  </ion-content>
+    <div class="item">
+      <button class="button button-outline button-block button-clear button-calm" ng-click="logout()">Logout</button>
+  </div>
+</ion-list>
+
+
+<div class="list list-inset">
+
+    <div class="item row" ng-repeat="user in unverifiedUsers">
+
+        <h3 class="col">{{user.user_name}}</h3>
+        <button class="col" ng-click="verify({{user.user_id}})">verify</button>
+    </div>
+
+
+
+</div>
+</ion-content>
 </ion-view>

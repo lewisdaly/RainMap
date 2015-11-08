@@ -21,7 +21,8 @@ angular.module('starter', [
   'service.signup',
   'service.user',
   'rainapp.utils',
-  'azure-mobile-service.module'
+  'azure-mobile-service.module',
+  'AdalAngular'
   ])
 
 .run(function($ionicPlatform, $rootScope, $ionicLoading, $location, $http, $localstorage) {
@@ -43,25 +44,25 @@ angular.module('starter', [
   //http://jasonwatmore.com/post/2015/03/10/AngularJS-User-Registration-and-Login-Example.aspx
   $rootScope.globals = $localstorage.getObject('globals');
   if ($rootScope.globals){
-    if ($rootScope.globals.currentUser) {
-      $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata;
-    }  
+    // if ($rootScope.globals.currentUser) {
+    //   $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata;
+    // }  
   } else {
     $rootScope.globals = {};
   }
 
-  $rootScope.$on('$locationChangeStart', function (event, next, current) {
-    // redirect to login page if not logged in and trying to access a restricted page
-    //TODO: Add to this!
-    var pageArray = ['/login', '/signup'];
-    var restrictedPage = pageArray.indexOf($location.path()) === -1;
-    // var restrictedPage = $.inArray($location.path(), ) === -1;
-    var loggedIn = $rootScope.globals.currentUser;
-    if (restrictedPage && !loggedIn) {
-      console.log("Error: not logged in. Redirecting to /login");
-      $location.path('/login');
-    }
-  });
+  // $rootScope.$on('$locationChangeStart', function (event, next, current) {
+  //   // redirect to login page if not logged in and trying to access a restricted page
+  //   //TODO: Add to this!
+  //   var pageArray = ['/login', '/signup'];
+  //   var restrictedPage = pageArray.indexOf($location.path()) === -1;
+  //   // var restrictedPage = $.inArray($location.path(), ) === -1;
+  //   var loggedIn = $rootScope.globals.currentUser;
+  //   if (restrictedPage && !loggedIn) {
+  //     console.log("Error: not logged in. Redirecting to /login");
+  //     $location.path('/login');
+  //   }
+  // });
 
   //Refer to: http://learn.ionicframework.com/formulas/loading-screen-with-interceptors/
   //Loading indicators and callbacks
@@ -77,7 +78,24 @@ angular.module('starter', [
 
 })
 
-.config(function($stateProvider, $urlRouterProvider, $provide, debug) {
+//The ADAL Provider - Auth and Stuff
+.config(['$compileProvider', '$stateProvider', '$urlRouterProvider', '$httpProvider', 'adalAuthenticationServiceProvider',
+  function ($compileProvider, $stateProvider, $urlRouterProvider, $httpProvider, adalProvider) { 
+    adalProvider.init(
+    {
+      instance: 'https://login.microsoftonline.com/',
+      tenant: '35a32751-a7a4-47e9-830e-d320e5e2ce25',//'contoso.onmicrosoft.com', //not sure if this is right...
+      clientId: '18841449-2afd-4fdb-9246-0f7e461c61f8',
+      extraQueryParameter: 'nux=1',
+      //cacheLocation: 'localStorage', // enable this for IE, as sessionStorage does not work for localhost.
+    },
+    $httpProvider
+    );
+
+
+  }])
+
+.config(function($stateProvider, $urlRouterProvider, $provide, debug, adalAuthenticationServiceProvider) {
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
@@ -103,13 +121,15 @@ angular.module('starter', [
   .state('tab', {
     url: '/tab',
     abstract: true,
-    templateUrl: 'templates/tabs.html'
+    templateUrl: 'templates/tabs.html',
+
   })
 
   // Each tab has its own nav history stack:
 
   .state('tab.map', {
     url: '/map',
+    // requireADLogin: true,
     views: {
       'tab-map': {
         templateUrl: 'templates/tab-map.html',
@@ -120,6 +140,7 @@ angular.module('starter', [
 
   .state('tab.report', {
     url: '/report',
+    // requireADLogin: true,
     views: {
       'tab-report': {
         templateUrl: 'templates/tab-report.html',
@@ -129,6 +150,7 @@ angular.module('starter', [
   })
   .state('tab.chat-detail', {
     url: '/chats/:chatId',
+    // requireADLogin: true,
     views: {
       'tab-chats': {
         templateUrl: 'templates/chat-detail.html',
@@ -139,6 +161,7 @@ angular.module('starter', [
 
   .state('tab.settings', {
     url: '/settings',
+    // requireADLogin: true,
     views: {
       'tab-settings': {
         templateUrl: 'templates/tab-settings.html',
@@ -203,6 +226,3 @@ angular.module('starter', [
   };
 
 })
-.service('backendService', function($http, apiUrl){
-      //Use the apiUrl variable to make API calls
-    });

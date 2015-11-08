@@ -19,7 +19,7 @@
         }
 
         function Logout() {
-            loginService.logout(); //TODO: fix, right now this doesn't work. But clearing credentials works for now.
+            // loginService.logout(); //TODO: fix, right now this doesn't work. But clearing credentials works for now.
             ClearCredentials()
         }
 
@@ -28,19 +28,20 @@
             return UserService.getUserDetails()
         }
 
-        function SetCredentials(username, userID, password) {
-            var authdata = Base64.encode(username + ':' + password);
+        function SetCredentials(user, authToken) {
+            // var authdata = Base64.encode(username + ':' + password);
 
 
             $rootScope.globals = {
                 currentUser: {
-                    username: username,
-                    userID:userID,
-                    authdata: authdata
+                    userID:user.user_ID,
+                    authToken: authToken,
+                    username: user.user_name, 
+                    verified: user.verified
                 }
             };
 
-            $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
+            // $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
             $localstorage.setObject('globals', $rootScope.globals);
         }
 
